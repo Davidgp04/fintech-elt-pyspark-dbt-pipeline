@@ -39,6 +39,9 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-qversity}
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
+      S3_BUCKET: ${S3_BUCKET}
+      S3_KEY: ${S3_KEY}
+
     volumes:
       - ./dags:/opt/airflow/dags
       - ./spark:/opt/airflow/spark

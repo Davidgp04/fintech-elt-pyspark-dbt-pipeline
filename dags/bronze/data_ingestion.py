@@ -6,7 +6,6 @@ from psycopg2.extras import execute_values
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
 
 
 S3_URL = f"https://{os.getenv('S3_BUCKET')}.s3.amazonaws.com/{os.getenv('S3_KEY')}"
