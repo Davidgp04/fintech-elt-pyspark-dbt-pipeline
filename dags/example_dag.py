@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
-from dags.bronze.data_ingestion import from_json_to_bronze
+from bronze.data_ingestion import from_json_to_bronze
 
 
 def hello_qversity():
