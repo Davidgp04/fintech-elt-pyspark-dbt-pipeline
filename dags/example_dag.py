@@ -40,6 +40,11 @@ hello_task = PythonOperator(
     python_callable=from_json_to_bronze,
     dag=dag,
 )
+load_bronze_table = BashOperator(
+    task_id="load_bronze_table",
+    bash_command='dbt run --models bronze',
+    dag=dag,
+)
 
 # ---------------------------------------------------------------
 # Task 2: Placeholder - PySpark tasks
@@ -70,4 +75,4 @@ dbt_test_placeholder = BashOperator(
 )
 
 # Task dependencies: Bronze -> PySpark -> dbt run -> dbt test
-hello_task >> spark_placeholder >> dbt_placeholder >> dbt_test_placeholder
+hello_task >> load_bronze_table >> spark_placeholder >> dbt_placeholder >> dbt_test_placeholder

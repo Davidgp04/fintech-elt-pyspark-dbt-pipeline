@@ -32,5 +32,8 @@
 --     '{"first_name": "Ana", "last_name": "Martinez"}'::jsonb as data,
 --     current_timestamp as load_timestamp
 
-select *
+select 
+        id,
+        data,          -- jsonb column with full customer record
+        load_timestamp -- when the record was ingested
 from {{ source('raw', 'raw_fintech_data') }}

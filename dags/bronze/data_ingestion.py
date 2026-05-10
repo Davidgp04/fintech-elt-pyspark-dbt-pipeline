@@ -30,7 +30,8 @@ def from_json_to_bronze():
     ) as conn:
         with conn.cursor() as cursor:
             cursor.execute("""
-                CREATE TABLE IF NOT EXISTS public_bronze.raw_fintech_data (
+                CREATE SCHEMA IF NOT EXISTS raw;
+                CREATE TABLE IF NOT EXISTS raw.raw_fintech_data (
                     id SERIAL PRIMARY KEY,
                     data JSONB,
                     load_timestamp TIMESTAMPTZ DEFAULT NOW()
@@ -41,7 +42,7 @@ def from_json_to_bronze():
             execute_values(
                 cursor,
                 """
-                INSERT INTO public_bronze.raw_fintech_data (data) VALUES %s;
+                INSERT INTO raw.raw_fintech_data (data) VALUES %s;
             """, records)
         conn.commit()
     print("Data loaded into Bronze layer successfully!")

@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: raw
-    schema: public_bronze
+    schema: raw
     tables:
       - name: raw_fintech_data
         description: "This table contains the raw fintech data ingested from various sources. It serves as the initial landing zone for all unprocessed data, allowing for further transformation and analysis in subsequent stages of the data pipeline."
