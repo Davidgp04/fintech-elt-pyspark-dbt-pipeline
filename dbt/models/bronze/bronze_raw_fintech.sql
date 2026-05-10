@@ -11,23 +11,26 @@
 --       id,
 --       data,          -- jsonb column with full customer record
 --       load_timestamp -- when the record was ingested
---   FROM {{ source('raw', 'fintech_raw') }}
+--   FROM {{ source('raw', 'raw_fintech_data') }}
 
-select
-    'CUST-0000001' as customer_id,
-    '{"first_name": "Maria", "last_name": "Garcia"}'::jsonb as data,
-    current_timestamp as load_timestamp
+-- select
+--     'CUST-0000001' as customer_id,
+--     '{"first_name": "Maria", "last_name": "Garcia"}'::jsonb as data,
+--     current_timestamp as load_timestamp
 
-union all
+-- union all
 
-select
-    'CUST-0000002' as customer_id,
-    '{"first_name": "Carlos", "last_name": "Rodriguez"}'::jsonb as data,
-    current_timestamp as load_timestamp
+-- select
+--     'CUST-0000002' as customer_id,
+--     '{"first_name": "Carlos", "last_name": "Rodriguez"}'::jsonb as data,
+--     current_timestamp as load_timestamp
 
-union all
+-- union all
 
-select
-    'CUST-0000003' as customer_id,
-    '{"first_name": "Ana", "last_name": "Martinez"}'::jsonb as data,
-    current_timestamp as load_timestamp
+-- select
+--     'CUST-0000003' as customer_id,
+--     '{"first_name": "Ana", "last_name": "Martinez"}'::jsonb as data,
+--     current_timestamp as load_timestamp
+
+select *
+from {{ source('raw', 'raw_fintech_data') }}
