@@ -34,6 +34,11 @@ services:
         boto3
         pyspark==3.5.0
         psycopg2-binary
+      POSTGRES_USER: ${POSTGRES_USER:-qversity-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-qversity-admin}
+      POSTGRES_DB: ${POSTGRES_DB:-qversity}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
     volumes:
       - ./dags:/opt/airflow/dags
       - ./spark:/opt/airflow/spark
