@@ -46,4 +46,6 @@ def from_json_to_bronze():
         conn.commit()
     print("Data loaded into Bronze layer successfully!")
 if __name__ == "__main__":
+    now = datetime.now()
     from_json_to_bronze()
+    print(f"Data ingestion completed at {datetime.now() - now} seconds")
