@@ -42,7 +42,7 @@ hello_task = PythonOperator(
 )
 load_bronze_table = BashOperator(
     task_id="load_bronze_table",
-    bash_command='dbt run --models bronze',
+    bash_command='cd /opt/airflow/dbt && dbt run --profiles-dir /opt/airflow/dbt --models bronze',
     dag=dag,
 )
 
