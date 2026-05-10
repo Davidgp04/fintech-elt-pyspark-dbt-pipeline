@@ -18,6 +18,7 @@ services:
       retries: 5
 
   airflow:
+    user: "${AIRFLOW_UID:-50000}:0"
     image: apache/airflow:2.7.3-python3.11
     restart: on-failure
     depends_on:
