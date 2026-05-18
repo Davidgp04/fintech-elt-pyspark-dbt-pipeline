@@ -34,14 +34,16 @@ properties = {
     "driver": "org.postgresql.Driver"
 }
 
-spark = SparkSession.builder \
-    .appName("PostgreSQLExample") \
-    .master("local[*]") \
+spark = (
+    SparkSession.builder
+    .appName("PostgreSQLExample")
+    .master("local[*]")
     .config(
-        "spark.jars.packages",
-        "org.postgresql:postgresql:42.7.3"
-    ) \
+        "spark.jars",
+        "/opt/spark/jars/postgresql.jar"
+    )
     .getOrCreate()
+)
 
 df = spark.read.jdbc(
     url=jdbc_url,
