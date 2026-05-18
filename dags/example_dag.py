@@ -35,6 +35,11 @@ dag = DAG(
 # ---------------------------------------------------------------
 # Task 1: Placeholder - Download JSON from S3 and load to Bronze
 # ---------------------------------------------------------------
+schema_creation_task = BashOperator(
+    task_id= "create_schemas",
+    bash_command='cd /opt/airflow/dbt && dbt run-operation bootstrap_schemas',
+    dag=dag,
+)
 hello_task = PythonOperator(
     task_id="hello_qversity",
     python_callable=from_json_to_bronze,
@@ -52,7 +57,8 @@ load_bronze_table = BashOperator(
 # ---------------------------------------------------------------
 spark_placeholder = BashOperator(
     task_id="spark_placeholder",
-    bash_command='echo "PySpark tasks go here"',
+    # bash_command='spark-submit --packages org.postgresql:postgresql:42.7.3 /opt/airflow/spark/spark_job.py',
+    bash_command='spark-submit /opt/airflow/spark/spark_job.py',
     dag=dag,
 )
 
@@ -75,4 +81,6 @@ dbt_test_placeholder = BashOperator(
 )
 
 # Task dependencies: Bronze -> PySpark -> dbt run -> dbt test
-hello_task >> load_bronze_table >> spark_placeholder >> dbt_placeholder >> dbt_test_placeholder
+schema_creation_task >> hello_task >> load_bronze_table >> spark_placeholder >> dbt_placeholder >> dbt_test_placeholder
+
+

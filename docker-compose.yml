@@ -77,3 +77,7 @@ services:
 
 volumes:
   postgres_data:
+
+
+# sudo chown -R 50000:0 dags logs data dbt spark
+# sudo chmod -R 775 dags logs data dbt spark
