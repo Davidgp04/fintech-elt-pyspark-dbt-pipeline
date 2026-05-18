@@ -31,6 +31,7 @@ services:
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER:-qversity-admin}:${POSTGRES_PASSWORD:-qversity-admin}@postgres/${POSTGRES_DB:-qversity}
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      PYSPARK_SUBMIT_ARGS: "--jars /opt/spark/jars/postgresql.jar --driver-class-path /opt/spark/jars/postgresql.jar pyspark-shell"
       # _PIP_ADDITIONAL_REQUIREMENTS: >-
       #   dbt-core
       #   dbt-postgres
