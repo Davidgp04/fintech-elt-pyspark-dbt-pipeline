@@ -42,9 +42,12 @@ spark = (
         "spark.jars",
         "/opt/spark/jars/postgresql.jar"
     )
+    .config(
+        "spark.driver.extraClassPath",
+        "/opt/spark/jars/postgresql.jar"
+    )
     .getOrCreate()
 )
-
 df = spark.read.jdbc(
     url=jdbc_url,
     table=table_name,
