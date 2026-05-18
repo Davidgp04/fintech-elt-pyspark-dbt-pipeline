@@ -58,7 +58,13 @@ load_bronze_table = BashOperator(
 spark_placeholder = BashOperator(
     task_id="spark_placeholder",
     # bash_command='spark-submit --packages org.postgresql:postgresql:42.7.3 /opt/airflow/spark/spark_job.py',
-    bash_command='spark-submit /opt/airflow/spark/spark_job.py',
+    # bash_command='spark-submit /opt/airflow/spark/spark_job.py',
+    bash_command="""
+spark-submit \
+  --jars /opt/spark/jars/postgresql.jar \
+  --driver-class-path /opt/spark/jars/postgresql.jar \
+  /opt/airflow/spark/spark_job.py
+""",
     dag=dag,
 )
 
