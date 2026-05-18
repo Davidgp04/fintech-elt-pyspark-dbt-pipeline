@@ -31,13 +31,13 @@ services:
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER:-qversity-admin}:${POSTGRES_PASSWORD:-qversity-admin}@postgres/${POSTGRES_DB:-qversity}
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
-      _PIP_ADDITIONAL_REQUIREMENTS: >-
-        dbt-core
-        dbt-postgres
-        pandas
-        boto3
-        pyspark==3.5.0
-        psycopg2-binary
+      # _PIP_ADDITIONAL_REQUIREMENTS: >-
+      #   dbt-core
+      #   dbt-postgres
+      #   pandas
+      #   boto3
+      #   pyspark==3.5.0
+      #   psycopg2-binary
       POSTGRES_USER: ${POSTGRES_USER:-qversity-admin}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-qversity-admin}
       POSTGRES_DB: ${POSTGRES_DB:-qversity}

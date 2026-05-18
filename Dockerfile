@@ -10,3 +10,10 @@ ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 ENV PATH=$JAVA_HOME/bin:$PATH
 
 USER airflow
+RUN pip install --no-cache-dir \
+    dbt-core \
+    dbt-postgres \
+    pandas \
+    boto3 \
+    pyspark==3.5.0 \
+    psycopg2-binary
