@@ -112,3 +112,4 @@ Thumbs.db
 *.pem
 .env.local
 .env.production
+dbt/models/silver/int/

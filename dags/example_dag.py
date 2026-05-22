@@ -73,7 +73,7 @@ spark-submit \
 # ---------------------------------------------------------------
 dbt_placeholder = BashOperator(
     task_id="dbt_placeholder",
-    bash_command='echo "dbt run goes here"',
+    bash_command='cd /opt/airflow/dbt && dbt build --profiles-dir /opt/airflow/dbt --select silver',
     dag=dag,
 )
 
