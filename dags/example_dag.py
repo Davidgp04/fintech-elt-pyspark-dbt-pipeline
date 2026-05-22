@@ -80,13 +80,13 @@ dbt_placeholder = BashOperator(
 # ---------------------------------------------------------------
 # Task 4: Placeholder - dbt test
 # ---------------------------------------------------------------
-dbt_test_placeholder = BashOperator(
-    task_id="dbt_test_placeholder",
-    bash_command='echo "dbt test goes here"',
+dbt_gold_place_holder = BashOperator(
+    task_id="dbt_gold_placeholder",
+    bash_command='cd /opt/airflow/dbt && dbt build --profiles-dir /opt/airflow/dbt --select gold',
     dag=dag,
 )
 
 # Task dependencies: Bronze -> PySpark -> dbt run -> dbt test
-schema_creation_task >> hello_task >> load_bronze_table >> spark_placeholder >> dbt_placeholder >> dbt_test_placeholder
+schema_creation_task >> hello_task >> load_bronze_table >> spark_placeholder >> dbt_placeholder >> dbt_gold_place_holder
 
 

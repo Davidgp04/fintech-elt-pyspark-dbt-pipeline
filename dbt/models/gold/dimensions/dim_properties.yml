@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: dim_customers
+    columns:
+      - name: customer_id
+        tests:
+          - not_null
+          - unique
+  - name: dim_accounts
+    columns:
+      - name: account_id
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+  - name: dim_dates
+    columns:
+      - name: date_day
+        tests:
+          - not_null
+          - unique
+      - name: date_sk
+        tests:
+          - not_null
+          - unique

@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: fact_transactions
+    columns:
+      - name: transaction_id
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+      - name: account_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_accounts')
+              field: account_id
+      - name: date_sk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_dates')
+              field: date_sk
+  - name: fact_loans
+    columns:
+      - name: loan_id
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+      
