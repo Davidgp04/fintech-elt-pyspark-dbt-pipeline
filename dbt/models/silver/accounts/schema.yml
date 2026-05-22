@@ -1,0 +1,55 @@
+version: 2
+
+models:
+  - name: accounts
+    columns:
+      - name: account_id
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('customers')
+              field: customer_id
+      - name: account_type
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['checking', 'savings', 'credit_card', 'investment']
+      - name: currency
+        tests:
+          - not_null
+          - check_no_leading_trailing_spaces:
+              column_name: currency
+          - check_upper_values:
+              column_name: currency
+      - name: credit_limit
+        tests:
+          - check_non_negative:
+              column_name: credit_limit
+      - name: interest_rate
+        tests:
+          - check_non_negative:
+              column_name: interest_rate
+      - name: opened_date
+        tests:
+          - not_null
+          - check_no_incorrect_date_format:
+              column_name: opened_date
+      - name: status
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['active', 'closed', 'frozen']
+      - name: balance
+        tests:
+          - check_non_negative:
+              column_name: balance
+      - name: branch_code
+        tests:
+          - not_null
+          - check_no_leading_trailing_spaces:
+              column_name: branch_code
+          

@@ -16,4 +16,11 @@
 
     {% endfor %}
 
+
+        {% set sql %}
+        create extension if not exists pg_trgm
+    {% endset %}
+    {{ log("Enabling pg_trgm extension", info=True) }}
+    {% do run_query(sql) %}
+
 {% endmacro %}

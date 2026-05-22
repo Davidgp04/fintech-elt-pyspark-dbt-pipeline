@@ -1,0 +1,157 @@
+version: 2
+
+sources:
+  - name: silver
+    schema: silver
+    tables:
+      - name: stg_customers
+      - name: stg_accounts
+      - name: stg_transactions
+      - name: stg_loans
+
+models:
+  - name: geography
+    columns:
+      - name: geo_id
+        tests:
+          - not_null
+          - unique
+      - name: country
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['CO', 'UY', 'BR', 'AR', 'MX', 'CL', 'PE']
+      - name: city
+        tests:
+          - not_null
+      - name: lat
+        tests:
+          - not_null
+      - name: lon
+        tests:
+          - not_null
+  
+
+  - name: relationship_managers
+    columns:
+      - name: relationship_manager_id
+        tests:
+          - not_null
+          - unique
+      - name: relationship_manager
+        tests:
+          - not_null
+          - check_no_extra_spacing:
+              column_name: relationship_manager
+  
+  - name: customer_segments
+    columns:
+      - name: segment_id
+        tests:
+          - not_null
+          - unique
+      - name: segment_name
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['retail', 'premium', 'private_banking', 'sme']
+
+  - name: customers
+    columns:
+      - name: customer_id
+        tests:
+          - not_null
+          - unique
+      - name: first_name
+        tests:
+          - not_null
+          - check_no_extra_spacing:
+              column_name: first_name
+      - name: last_name
+        tests:
+          - not_null
+          - check_no_extra_spacing:
+              column_name: last_name
+      - name: email
+        tests:
+          - not_null
+          - check_no_extra_spacing:
+              column_name: email
+      - name: phone_number
+        tests:
+          - not_null
+          - unique
+      - name: date_of_birth
+        tests:
+          - not_null
+          - check_no_incorrect_date_format:
+              column_name: date_of_birth
+      - name: registration_date
+        tests:
+          - not_null
+          - check_no_incorrect_date_format:
+              column_name: registration_date
+      - name: gender
+        tests:
+          - accepted_values:
+              values: ['M', 'F', 'Other']
+      - name: nationality
+        tests:
+          - check_upper_values:
+              column_name: nationality
+          - check_no_leading_trailing_spaces:
+              column_name: nationality
+      - name: address
+        tests:
+          - check_no_leading_trailing_spaces:
+              column_name: address
+          - check_no_extra_spacing:
+              column_name: address
+      - name: kyc_status
+        tests:
+          - accepted_values:
+              values: ['verified', 'pending', 'rejected', 'expired']
+      - name: risk_score
+        tests:
+          - check_between_values:
+              column_name: risk_score
+              min: 0
+              max: 100
+      - name: status
+        tests:
+          - accepted_values:
+              values: ['active', 'inactive', 'closed', 'suspended']
+      - name: geo_id
+        tests:
+        - relationships:
+            to: ref('geography')
+            field: geo_id
+      - name: relationship_manager_id
+        tests:
+          - relationships:
+              to: ref('relationship_managers')
+              field: relationship_manager_id
+      - name: segment_id
+        tests:
+          - relationships:
+              to: ref('customer_segments')
+              field: segment_id
+      - name: age
+        tests:
+          - not_null
+          - check_between_values:
+              column_name: age
+              min: 18
+              max: 120
+      - name: tenure
+        tests:
+          - not_null
+          - check_between_values:
+              column_name: tenure_months
+              min: 0
+              max: 1200
+      - name: age_bucket
+        tests:
+          - accepted_values:
+              values: ['Under 18','18-24', '25-34', '35-44', '45-54', '55-64', '65+']
+

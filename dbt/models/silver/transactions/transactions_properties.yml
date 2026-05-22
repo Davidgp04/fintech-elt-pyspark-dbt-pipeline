@@ -1,0 +1,63 @@
+version: 2
+
+
+models:
+  - name: transactions
+    columns:
+      - name: transaction_id
+        tests:
+          - not_null
+          - unique
+      - name: account_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('accounts')
+              field: account_id
+      - name: date
+        tests:
+          - not_null
+          - check_no_incorrect_date_format:
+              column_name: date
+      - name: amount
+        tests:
+          - check_non_negative:
+              column_name: amount
+      - name: currency
+        tests:
+          - not_null
+          - check_no_leading_trailing_spaces:
+              column_name: currency
+          - check_upper_values:
+              column_name: currency
+      - name: type
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['deposit', 'withdrawal', 'transfer', 'payment', 'refund', 'fee' ]
+      - name: category
+        tests:
+          - check_no_leading_trailing_spaces:
+              column_name: category
+          - accepted_values:
+              values: ['utilities', 'salary', 'rent', 'entertainment',
+                        'education', 'insurance', 'groceries', 'shopping', 'subscription', 'transport',
+                        'dining', 'healthcare', 'travel', 'investment', 'other']
+      - name: merchant
+        tests:
+          - check_no_leading_trailing_spaces:
+              column_name: merchant
+      - name: channel
+        tests:
+          - accepted_values:
+              values: ['mobile', 'web', 'atm', 'branch', 'pos']
+      - name: status
+        tests:
+          - accepted_values:
+              values: ['completed', 'pending', 'failed', 'reversed']
+      - name: description
+        tests:
+          - check_no_leading_trailing_spaces:
+              column_name: description
+          - check_no_extra_spacing:
+              column_name: description

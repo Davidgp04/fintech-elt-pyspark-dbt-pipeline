@@ -2,6 +2,8 @@ name: 'qversity'
 version: '2.0.0'
 config-version: 2
 
+
+
 profile: 'qversity'
 
 model-paths: ["models"]

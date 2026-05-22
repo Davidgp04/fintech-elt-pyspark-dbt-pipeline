@@ -1,0 +1,66 @@
+version: 2
+models:
+  - name: loans
+    columns:
+      - name: loan_id
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('customers')
+              field: customer_id
+      - name: type
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['personal', 'mortgage', 'auto', 'education', 'business']
+      - name: currency
+        tests:
+          - not_null
+          - check_no_leading_trailing_spaces:
+              column_name: currency
+          - check_upper_values:
+              column_name: currency
+      - name: principal
+        tests:
+          - check_non_negative:
+              column_name: principal
+      - name: outstanding_balance
+        tests:
+          - check_non_negative:
+              column_name: outstanding_balance
+      - name: annual_interest_rate
+        tests:
+          - check_non_negative:
+              column_name: annual_interest_rate
+      - name: term_months
+        tests:
+          - check_non_negative:
+              column_name: term_months
+      - name: start_date
+        tests:
+          - not_null
+          - check_no_incorrect_date_format:
+              column_name: start_date
+      - name: end_date
+        tests:
+          - check_no_incorrect_date_format:
+              column_name: end_date
+      - name: status
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['current', 'delinquent', 'default', 'paid_off']
+      - name: days_past_due
+        tests:
+          - check_non_negative:
+              column_name: days_past_due
+      - name: collateral_type
+        tests:
+          - check_no_leading_trailing_spaces:
+              column_name: collateral_type
+          - check_no_extra_spacing:
+              column_name: collateral_type

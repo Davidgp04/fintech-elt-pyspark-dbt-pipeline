@@ -1,0 +1,64 @@
+version: 2
+
+models:
+  - name: credit_info
+    columns:
+      - name: customer_id
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('customers')
+              field: customer_id
+      - name: credit_score
+        tests:
+          - check_non_negative:
+              column_name: credit_score
+          - check_between_values:
+              column_name: credit_score
+              min: 300
+              max: 850
+      - name: currency
+        tests:
+          - not_null
+          - check_no_leading_trailing_spaces:
+              column_name: currency
+          - check_upper_values:
+              column_name: currency
+      - name: utilization_pct
+        tests:
+          - check_non_negative:
+              column_name: utilization_pct
+          - check_between_values:
+              column_name: utilization_pct
+              min: 0
+              max: 100
+      - name: total_limit
+        tests:
+          - check_non_negative:
+              column_name: total_limit
+      - name: total_used
+        tests:
+          - check_non_negative:
+              column_name: total_used
+      - name: num_credit_accounts
+        tests:
+          - check_non_negative:
+              column_name: num_credit_accounts
+      - name: oldest_account_age_months
+        tests:
+          - check_non_negative:
+              column_name: oldest_account_age_months
+      - name: late_payments_12m
+        tests:
+          - check_non_negative:
+              column_name: late_payments_12m
+      - name: inquiries_6m
+        tests:
+          - check_non_negative:
+              column_name: inquiries_6m
+      - name: bankruptcy_flag
+        tests:
+            - accepted_values:
+                values: [true, false]
+                quote: false

@@ -11,9 +11,9 @@
 --   - Credit score distribution by country
 --   - Customer acquisition trend over time
 
-select
-    customer_id,
-    first_name,
-    last_name,
-    current_timestamp as report_generated_at
-from {{ ref('silver_customers') }}
+-- select
+--     customer_id,
+--     first_name,
+--     last_name,
+--     current_timestamp as report_generated_at
+-- from {{ ref('int_customers') }}

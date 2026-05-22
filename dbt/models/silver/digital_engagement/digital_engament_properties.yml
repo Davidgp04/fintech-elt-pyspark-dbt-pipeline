@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: digital_engagement
+    columns:
+      - name: customer_id
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('customers')
+              field: customer_id
+      - name: mobile_app_registered
+        tests:
+          - accepted_values:
+              values: [true, false]
+              quote: false
+      - name: web_banking_registered
+        tests:
+          - accepted_values:
+              values: [true, false]
+              quote: false
+      - name: last_login_date
+        tests:
+          - check_no_incorrect_date_format:
+              column_name: last_login_date
+      - name: avg_monthly_logins
+        tests:
+          - check_non_negative:
+              column_name: avg_monthly_logins
+      - name: preferred_channel
+        tests:
+          - accepted_values:
+              values: ['mobile', 'web', 'atm', 'branch', 'pos', 'phone']
+      - name: push_notifications
+        tests:
+          - accepted_values:
+              values: [true, false]
+              quote: false
+      - name: paperless_statements
+        tests:
+          - accepted_values:
+              values: [true, false]
+              quote: false
