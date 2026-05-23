@@ -37,7 +37,7 @@ dag = DAG(
 # ---------------------------------------------------------------
 schema_creation_task = BashOperator(
     task_id= "create_schemas",
-    bash_command='cd /opt/airflow/dbt && dbt run-operation bootstrap_schemas',
+    bash_command='cd /opt/airflow/dbt && dbt deps && dbt run-operation bootstrap_schemas',
     dag=dag,
 )
 hello_task = PythonOperator(

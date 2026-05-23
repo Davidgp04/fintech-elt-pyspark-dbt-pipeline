@@ -5,11 +5,12 @@ t.transaction_id,
 t.account_id,
 a.customer_id,
 d.date_sk,
-t.amount,
 t.type,
 t.status,
 t.category,
 t.currency,
+t.amount as original_amount,
+{{ convert_columns_to_usd('t.amount', 't.currency') }} as amount,
 t.merchant,
 t.channel
 from {{ ref('transactions') }} t

@@ -8,5 +8,6 @@ select
     currency,
     status,
     opened_date,
-    balance
+    balance as orignial_balance,
+    {{ convert_columns_to_usd('balance', 'currency') }} as balance
 from {{ ref('accounts') }}
