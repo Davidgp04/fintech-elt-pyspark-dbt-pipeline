@@ -56,9 +56,13 @@ qversity-data-2026-<city>-<firstname><lastname>/
 
 1. **Clone the repository and setup environment**:
 ```bash
-git clone <your-repo-url>
-cd qversity-data-2026-<city>-<name>
+git clone qversity-data-2026-medellin-davidgrisales
+cd qversity-data-2026-medellin-davidgrisales
 cp env.example .env
+# If you have a MacBook, execute the following commands
+mkdir -p logs dags plugins
+sudo chown -R 50000:0 logs dags plugins
+sudo chmod -R 775 logs dags plugins
 ```
 
 2. **Start services**:
@@ -75,6 +79,7 @@ docker compose ps
 
 5. **Trigger the pipeline** (once you've built it):
 ```bash
+docker compose exec airflow airflow dags unpause qversity_fintech_pipeline
 docker compose exec airflow airflow dags trigger qversity_fintech_pipeline
 ```
 
@@ -101,12 +106,6 @@ docker compose exec airflow airflow dags trigger qversity_fintech_pipeline
 
 # Check DAG run status
 docker compose exec airflow airflow dags list-runs -d qversity_fintech_pipeline
-```
-
-### PySpark
-```bash
-# Test PySpark interactively
-docker compose exec airflow python -c "from pyspark.sql import SparkSession; print('PySpark OK')"
 ```
 
 ### dbt
@@ -146,15 +145,7 @@ docker compose exec postgres psql -U qversity-admin -d qversity
 \d <schema>.<table_name>
 ```
 
-## Data Source
 
-The dataset is a JSON file from an S3 public bucket:
-
-- **URL**: `https://qversity-raw-public-data.s3.amazonaws.com/fintech_banking_dataset.json`
-- **Records**: ~5,000 customers with nested accounts, transactions, loans, credit info, and digital engagement data
-- **Countries**: CO, UY, AR, MX, CL, PE, BR
-
-See the **Technical Project Guide** for full dataset documentation.
 
 ## Git Tags (Milestones)
 
@@ -181,9 +172,245 @@ docker compose down -v
 docker compose down -v --rmi local
 ```
 
+
+# Data Cleaning Decisions — Qversity Silver Layer
+
+Source: `silver` schema — tables `stg_customers`, `stg_accounts`, `stg_transactions`, `stg_loans`
+
+---
+
+## Customers (`stg_customers`)
+
+### City
+- Strip leading/trailing whitespace.
+- Use `pg_trgm` similarity to detect and correct misspelled city names, retaining the most frequent variant as the canonical form.
+
+### Email
+- Strip whitespace and convert to lowercase.
+- For records missing `@`, insert it after the `last_name` occurrence in the email string (verified that all invalid emails contain the last name).
+
+### First Name / Last Name
+- Normalize to lowercase. Capitalization can be applied at the presentation layer if needed.
+
+### Phone Number
+- Standardize to **E.164** format: keep only digits and a leading `+`.
+- Add the country code for numbers that omit it.
+
+### Date of Birth
+- Unify four coexisting formats into a single standard (`YYYY-MM-DD`):
+  - `MM-DD-YYYY`
+  - `YYYY-MM-DD`
+  - `DD/MM/YYYY`
+
+### Gender
+- Accepted values: `M`, `F`, `Other`.
+- Missing or unrecognized values (e.g. `"unknown"`) are set to `NULL`; representation of nulls is delegated to the presentation layer.
+
+### Nationality
+- No missing values or value corrections needed.
+- Enforce consistent uppercase formatting.
+
+### Country
+- No cleaning required.
+
+### Customer Segment
+- Lowercase and trim all values.
+- Translate Spanish variants:
+
+| Original       | Standardized    |
+|----------------|-----------------|
+| `banca_privada` | `private_banking` |
+| `minorista`    | `retail`         |
+| `pyme`         | `sme`            |
+
+### Status
+- Lowercase and trim all values.
+- Translate Spanish variants:
+
+| Original    | Standardized |
+|-------------|--------------|
+| `activo`    | `active`     |
+| `inactivo`  | `inactive`   |
+| `suspendido`| `suspended`  |
+| `cerrado`   | `closed`     |
+
+### KYC Status
+- Lowercase all values. No null handling required.
+- Accepted values: `verified`, `pending`, `expired`, `rejected`.
+
+### Address
+- Convert literal null representations (`'null'`, `'n/a'`, etc.) to actual `NULL`.
+- Normalize whitespace (collapse multiple spaces, strip leading/trailing).
+
+### Risk Score
+- No modifications required.
+
+### Relationship Manager
+- Convert literal null strings (15 distinct representations found) to actual `NULL`.
+- Given the volume of null representations, placing relationship managers in a dedicated reference table is recommended.
+
+### Latitude / Longitude
+- Valid ranges: lat ∈ [−90, 90], lon ∈ [−180, 180].
+- For out-of-range coordinates, replace with the **median** lat/lon of valid records for the same city/country.
+
+### Digital Engagement (JSON)
+- `mobile_app_registered`, `web_banking_registered`, `push_notifications`, `paperless_statements`: no cleaning required.
+- `last_login_date`: normalize date format.
+- `avg_monthly_logins`: remove non-numeric values; enforce integer type.
+- `preferred_channel`: no cleaning required.
+
+### Credit Info (JSON)
+- `credit_score`: no nulls; remove or flag any negative values.
+- `currency`: no cleaning required.
+- `utilization_pct`: remove non-numeric strings; enforce decimal type.
+- `total_limit` / `total_used`: remove non-numeric strings; enforce decimal type.
+- `num_credit_accounts`, `oldest_account_age_months`, `late_payments_12m`, `inquiries_6m`: enforce integer type; no null issues found.
+- `bankruptcy_flag`: no cleaning required.
+
+---
+
+## Accounts (`stg_accounts`)
+
+### Account ID
+- No duplicates found; no cleaning required.
+
+### Account Type
+- Trim and lowercase. EDA confirmed values are already lowercase, but the transformation is enforced for consistency.
+
+### Currency
+- Already normalized (uppercase ISO codes). No changes required.
+
+### Balance
+- No null values detected after review.
+- No cleaning required.
+
+### Credit Limit
+- Only `credit_card` accounts have a credit limit; no cross-type contamination detected.
+- Convert from scientific notation to standard decimal format.
+
+### Interest Rate
+- No null or out-of-range values. No cleaning required.
+
+### Opened Date
+- Unify four coexisting formats into `YYYY-MM-DD`:
+  - `YYYY-MM-DD`
+  - `DD/MM/YYYY`
+  - `MM-DD-YYYY`
+  - `YYYYMMDD`
+- Two null values present; retain as `NULL` (relevant for activity tracking).
+
+### Status
+- Lowercase and trim all values.
+- Translate Spanish variants:
+
+| Original   | Standardized |
+|------------|--------------|
+| `activo`   | `active`     |
+| `cerrado`  | `closed`     |
+| `congelado`| `frozen`     |
+
+### Branch Code
+- Trim leading/trailing whitespace. No other cleaning required.
+
+---
+
+## Transactions (`stg_transactions`)
+
+### Customer ID / Account ID
+- Referential integrity verified: all IDs exist in their parent tables. No cleaning required.
+
+### Date
+- Unify four coexisting formats into `YYYY-MM-DD`:
+  - `YYYY-MM-DD`
+  - `DD/MM/YYYY`
+  - `MM-DD-YYYY`
+  - `YYYYMMDD`
+- Null dates retained as `NULL`.
+
+### Amount
+- No cleaning required beyond verifying range.
+
+### Currency
+- Already normalized. Enforce format consistency.
+
+### Type
+- Lowercase and trim.
+- Translate Spanish variants:
+
+| Original       | Standardized |
+|----------------|--------------|
+| `retiro`       | `withdrawal` |
+| `transferencia`| `transfer`   |
+| `reembolso`    | `refund`     |
+| `pago`         | `payment`    |
+| `deposito`     | `deposit`    |
+| `comision`     | `fee`        |
+
+### Category
+- Lowercase, trim, and handle improper null representations.
+
+### Merchant
+- Convert literal null placeholders (`'NA'`, `'N/A'`, etc.) to actual `NULL`.
+
+### Channel
+- Already normalized. Enforce lowercase and trimming.
+
+### Status
+- Lowercase and trim. No null handling required.
+
+### Description
+- Collapse multiple whitespace characters into a single space.
+
+---
+
+## Loans (`stg_loans`)
+
+### Loan ID
+- No duplicates found; no cleaning required.
+
+### Type
+- Lowercase and trim. No translation needed.
+
+### Currency
+- No null values. No cleaning required.
+
+### Principal
+- Null values can be deterministically imputed using the standard loan amortization formula from `monthly_payment`, `interest_rate`, and `term_months` where those fields are available.
+
+### Outstanding Balance
+- No deterministic imputation method available for nulls; retain as `NULL`.
+- Note: some loans show full repayment ahead of the original schedule.
+
+### Interest Rate
+- No nulls or negative values. No cleaning required.
+
+### Term Months
+- No nulls or out-of-range values. No cleaning required.
+
+### Monthly Payment
+- Null only when `principal` is also null. No independent cleaning required.
+
+### Start Date / End Date
+- Unify four coexisting formats into `YYYY-MM-DD`:
+  - `YYYY-MM-DD`
+  - `DD/MM/YYYY`
+  - `MM-DD-YYYY`
+  - `YYYYMMDD`
+- Null dates retained as `NULL`.
+
+### Status
+- Lowercase and trim. No null handling required.
+
+### Days Past Due
+- No nulls or negative values. Enforce integer type constraint.
+
+### Collateral Type
+- Multiple null placeholders detected; normalize all to actual `NULL`.
+
+
 ## Participant
 
-- **Name**: [Your Full Name]
-- **Email**: [your.email@example.com]
-- **City**: [Your City]
+- **Name**: David Grisales Posada
+- **Email**: daviddgp04@hotmail.com
+- **City**: Medellin
 - **Cohort**: Qversity 2026
