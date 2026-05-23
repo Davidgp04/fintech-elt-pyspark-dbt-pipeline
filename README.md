@@ -43,6 +43,18 @@ qversity-data-2026-<city>-<firstname><lastname>/
 ├── .pre-commit-config.yaml   # Code quality hooks
 └── README.md                 # This file
 ```
+## PowerBI DashBoard
+<img width="496" height="710" alt="image" src="https://github.com/user-attachments/assets/4cd4f383-75c3-48d0-aea5-7837fe8195d5" />
+Choose "Obtain Data"
+Then PostgreSQL database
+<img width="984" height="868" alt="image" src="https://github.com/user-attachments/assets/8d0a6419-fae2-4cc1-ae9b-818d48c12711" />
+<img width="1072" height="525" alt="image" src="https://github.com/user-attachments/assets/c0f2a4ca-ab38-4840-9734-743bea43ee1a" />
+Enter database values.
+If prompted for username and password use "qversity-admin" for both username and password.
+
+
+
+
 
 ## Quick Start
 
@@ -406,6 +418,12 @@ Source: `silver` schema — tables `stg_customers`, `stg_accounts`, `stg_transac
 
 ### Collateral Type
 - Multiple null placeholders detected; normalize all to actual `NULL`.
+
+## Deduplication Reasoning
+It was found that duplicate data from raw was the same after removing whitespaces and lowercasing the data, so simply deduplicating by string was enough.
+
+# ERD
+<img width="1225" height="620" alt="image" src="https://github.com/user-attachments/assets/ee5d22ee-3a8a-43ad-96b9-9e306d05937e" />
 
 
 ## Participant
