@@ -431,4 +431,4 @@ It was found that duplicate data from raw was the same after removing whitespace
 - **Name**: David Grisales Posada
 - **Email**: daviddgp04@hotmail.com
 - **City**: Medellin
-- **Cohort**: Qversity 2026
+- **Proposed by**: Qversity 2026
