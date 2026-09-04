@@ -19,7 +19,7 @@ S3 (JSON) → Airflow → Bronze → PySpark (Silver) → dbt (Silver) → dbt (
 ## Project Structure
 
 ```
-etl-project-davidgrisales/
+fintech-elt-pyspark-dbt-pipeline/
 ├── dags/                     # Airflow DAG definitions
 │   └── example_dag.py        # Placeholder pipeline DAG
 ├── spark/                    # PySpark scripts (NEW in v2)
@@ -68,7 +68,7 @@ If prompted for username and password use "qversity-admin" for both username and
 
 1. **Clone the repository and setup environment**:
 ```bash
-git clone etl-project-davidgrisales
+git clone fintech-elt-pyspark-dbt-pipeline
 cd qversity-data-2026-medellin-davidgrisales
 cp env.example .env
 # If you have a MacOS or Linux, execute the following commands
