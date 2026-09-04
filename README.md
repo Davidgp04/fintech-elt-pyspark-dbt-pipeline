@@ -1,4 +1,4 @@
-# Qversity v2 — Fintech/Banking Data Engineering Project
+# Fintech/Banking Data Engineering Project
 
 A containerized ELT data platform using Docker Compose with Airflow, PostgreSQL, PySpark, dbt, and PowerBI.
 
